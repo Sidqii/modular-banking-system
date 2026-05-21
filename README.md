@@ -26,5 +26,5 @@ building a tiny banking system to suffer less in future backend projects 😭
 - OOP
 - Coffee
 - Confusion
-- W3Schools: the reason this project still exists👏
+- [W3Schools](https://www.w3schools.com/php/default.asp): the reason this project still exists👏
 - Slightly reduced AI token consumption 🗿

@@ -1,11 +1,23 @@
 <?php
 
-require_once __DIR__ . '/accounts/RegularAccount.php';
+use Account\Authentication\AuthService;
+use Account\Bank\RegularAccount;
+use Account\User;
 
-$account = new RegularAccount('mathilda', 5000);
+require_once __DIR__ . '/account/authentication/AuthService.php';
+require_once __DIR__ . '/account/User.php';
+require_once __DIR__ . '/account/bank/RegularAccount.php';
 
 try {
-    echo $account->checkBalance();
+    $user = new User('mathilda', 'mathilda123');
+
+    $auth = new AuthService();
+
+    $auth->login($user);
+
+    $bank = new RegularAccount($auth);
+
+    echo $bank->checkBalance();
 } catch (\Throwable $th) {
     echo $th->getMessage();
 }
