@@ -2,19 +2,22 @@
 
 namespace Account\Bank;
 
-require_once __DIR__ . '/BankAccount.php';
+use Contract\TransactionFee;
 
-class PremiumAccount extends BankAccount
+require_once __DIR__ . '/BankAccount.php';
+require_once __DIR__ . '/../../contract/TransactionFee.php';
+
+class PremiumAccount extends BankAccount implements TransactionFee
 {
     #[\Override]
-    public function deposito()
+    public function additionByFee(int $ammount)
     {
-        throw new \Exception('Not implemented');
+        return $ammount + 150;
     }
 
     #[\Override]
-    public function withdraw()
+    public function deductionByFee(int $ammount)
     {
-        throw new \Exception('Not implemented');
+        return $ammount - 150;
     }
 }

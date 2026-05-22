@@ -3,8 +3,6 @@
 namespace Account\Bank;
 
 use Account\Authentication\AuthService;
-use Account\Authentication\AuthSession;
-use Account\User;
 use Data\DummyDatabase;
 use Traits\HasActivity;
 
@@ -21,6 +19,9 @@ abstract class BankAccount
     protected DummyDatabase $balance;
     protected AuthService $service;
 
+    protected const DEPOSITO = 'deposito';
+    protected const WITHDRAW = 'withdraw';
+
     public function __construct(AuthService $service)
     {
         $this->balance = new DummyDatabase();
@@ -34,17 +35,41 @@ abstract class BankAccount
         }
 
         foreach ($this->balance->getData() as $balance) {
-            if ($balance['username'] === $this->service->credentials()) {
+
+            if ($balance['username'] === $this->service->currentUser()) {
+
                 return $this->loggerActivity('balance: total balance ' . $balance['balance']);
             }
         }
 
         throw new \Exception(
-            $this->loggerActivity("error: username " . $this->service->credentials() . " not found")
+            $this->loggerActivity("error: username " . $this->service->currentUser() . " not found")
         );
     }
 
-    abstract function deposito();
+    protected function transaction(int $ammount, string $action)
+    {
+        foreach ($this->balance->getData() as $balance) {
+            if ($balance['username'] === $this->service->currentUser()) {
+                switch ($action) {
+                    case self::DEPOSITO:
 
-    abstract function withdraw();
+                        return $this->balance->updateBalance(
+                            $this->service->currentUser(),
+                            $balance['balance'] += $ammount
+                        );
+
+                    case self::WITHDRAW:
+
+                        return $this->balance->updateBalance(
+                            $this->service->currentUser(),
+                            $balance['balance'] -= $ammount
+                        );
+
+                    default:
+                        return $this->loggerActivity('failed: invalid action input');
+                }
+            }
+        }
+    }
 }

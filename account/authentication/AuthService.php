@@ -45,7 +45,7 @@ class AuthService
         return $this->session->isAuthenticated();
     }
 
-    public function credentials()
+    public function currentUser()
     {
         return $this->session->currentUser();
     }

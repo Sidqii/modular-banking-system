@@ -2,19 +2,35 @@
 
 namespace Account\Bank;
 
-require_once __DIR__ . '/BankAccount.php';
+use Contract\TransactionFee;
 
-class RegularAccount extends BankAccount
+require_once __DIR__ . '/BankAccount.php';
+require_once __DIR__ . '/../../contract/TransactionFee.php';
+
+class RegularAccount extends BankAccount implements TransactionFee
 {
     #[\Override]
-    public function deposito()
+    public function deductionByFee(int $ammount)
+    {
+        return $ammount + 300;
+    }
+
+    #[\Override]
+    public function additionByFee(int $ammount)
     {
         throw new \Exception('Not implemented');
     }
 
-    #[\Override]
-    public function withdraw()
+    public function deposito(int $ammount)
     {
-        throw new \Exception('Not implemented');
+        $this->transaction($ammount, self::DEPOSITO);
+    }
+
+    public function withdraw(int $ammount)
+    {
+        $this->transaction(
+            $this->deductionByFee($ammount),
+            self::WITHDRAW,
+        );
     }
 }

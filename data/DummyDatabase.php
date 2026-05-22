@@ -18,9 +18,18 @@ class DummyDatabase
         [
             'username' => 'racoon',
             'password' => 'racoon123',
-            'balance' => 50000,
+            'balance' => 80000,
         ],
     ];
+
+    public function updateBalance(string $userName, int $newBalance)
+    {
+        foreach ($this->data as $index => $value) {
+            if ($value['username'] === $userName) {
+                return $this->data[$index]['balance'] = $newBalance;
+            }
+        }
+    }
 
     public function getData()
     {
