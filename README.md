@@ -15,16 +15,19 @@ Then suddenly:
 Now I'm here...
 building a tiny banking system to suffer less in future backend projects 😭
 
-## Features
-- Deposit
-- Withdraw
-- Transaction Fee
-- Transaction Logger
+## Special Thanks
 
-## Built with
-- Native PHP
-- OOP
-- Coffee
-- Confusion
-- [W3Schools](https://www.w3schools.com/php/default.asp): the reason this project still exists👏
+- Coffee ☕
+- Confusion 🤯
+- Debugging sessions that lasted longer than expected
+- [W3Schools](https://www.w3schools.com/php/default.asp) — the reason this project still exists 👏
 - Slightly reduced AI token consumption 🗿
+
+## Lessons Learned
+
+- State lives as long as the object lives
+- `foreach ($array as $value)` is not the same as `foreach ($array as $index => $value)`
+- CurrentUser nearly made me cry
+- Updating balance requires knowing where the balance actually lives
+- Business logic is harder than syntax
+- OOP starts making sense when duplication becomes painful
