@@ -31,7 +31,7 @@ abstract class BankAccount
     public function checkBalance()
     {
         if (!$this->service->authenticated()) {
-            throw new \Exception("error: username are unauthenticated");
+            throw new \Exception($this->loggerError("username are unauthenticated"));
         }
 
         foreach ($this->balance->getData() as $balance) {
@@ -43,14 +43,16 @@ abstract class BankAccount
         }
 
         throw new \Exception(
-            $this->loggerActivity("error: username " . $this->service->currentUser() . " not found")
+            $this->loggerError("username " . $this->service->currentUser() . " not found")
         );
     }
 
     protected function transaction(int $ammount, string $action)
     {
         foreach ($this->balance->getData() as $balance) {
+
             if ($balance['username'] === $this->service->currentUser()) {
+
                 switch ($action) {
                     case self::DEPOSITO:
 

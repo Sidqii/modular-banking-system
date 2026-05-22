@@ -6,17 +6,20 @@ class DummyDatabase
 {
     private array $data = [
         [
-            'username' => 'mathilda',
+            'name' => 'mathilda',
+            'username' => 'mathilda@mail.com',
             'password' => 'mathilda123',
             'balance' => 50000,
         ],
         [
-            'username' => 'anggoro',
+            'name' => 'anggoro',
+            'username' => 'anggoro@mail.com',
             'password' => 'anggoro123',
             'balance' => 10000,
         ],
         [
-            'username' => 'racoon',
+            'name' => 'racoon',
+            'username' => 'racoon@mail.com',
             'password' => 'racoon123',
             'balance' => 80000,
         ],
@@ -25,7 +28,9 @@ class DummyDatabase
     public function updateBalance(string $userName, int $newBalance)
     {
         foreach ($this->data as $index => $value) {
+
             if ($value['username'] === $userName) {
+
                 return $this->data[$index]['balance'] = $newBalance;
             }
         }

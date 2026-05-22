@@ -30,14 +30,16 @@ class AuthService
         $password = $user->getPassword();
 
         foreach ($this->database->getData() as $data) {
+
             if ($data['username'] === $username && $data['password'] === $password) {
+
                 $this->session->login($username);
 
                 return $this->loggerActivity('success: login successfully');
             }
         }
 
-        throw new \Exception($this->loggerActivity("error: invalid credentials"));
+        throw new \Exception($this->loggerError($username . " not found."));
     }
 
     public function authenticated()
