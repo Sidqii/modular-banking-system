@@ -5,18 +5,20 @@ namespace Account\Authentication;
 class AuthSession
 {
     private bool $isLoggedIn = false;
-    private string $currentUser;
+    private ?int $currentUser;
 
-    public function login(string $username)
+    public function active(int $id)
     {
         $this->isLoggedIn = true;
 
-        $this->currentUser = $username;
+        $this->currentUser = $id;
     }
 
-    public function logout()
+    public function inactive()
     {
         $this->isLoggedIn = false;
+
+        $this->currentUser = null;
     }
 
     public function isAuthenticated()
@@ -24,7 +26,7 @@ class AuthSession
         return $this->isLoggedIn;
     }
 
-    public function currentUser()
+    public function currentUser(): ?string
     {
         return $this->currentUser;
     }

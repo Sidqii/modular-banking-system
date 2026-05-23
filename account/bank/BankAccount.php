@@ -27,38 +27,39 @@ abstract class BankAccount
         $this->repository = new AccountRepository();
     }
 
-    public function createAccount()
-    {
-        throw new \Exception("Unimplemented method");
-    }
-
     public function checkBalance()
     {
-        $currentUser = $this->repository->getUsername($this->service->currentUser());
+        $getBalance = $this->repository->getUserBalance(
+            $this->service->currentUser()
+        );
 
-        return $this->loggerActivity("balance: " . $currentUser->balance);
+        return $this->loggerActivity("balance: IDR " . $getBalance->balance);
     }
 
-    protected function transaction(object $currentUser, int $ammount, string $action)
+    public function createAccount()
     {
-        $userBalance = $currentUser->balance;
+        throw new \Exception("unimplemented method");
+    }
+
+    protected function transaction(int $currentUser, int $ammount, string $action)
+    {
+        $getBalance = $this->repository->getUserBalance($currentUser);
+
+        $balance = $getBalance->balance;
 
         switch ($action) {
-
             case self::DEPOSITO:
-                return $this->repository->updateBalance(
-                    $currentUser->username,
-                    $userBalance += $ammount
-                );
+                $this->repository->updateBalance($currentUser, $balance += $ammount);
+
+                return $balance;
 
             case self::WITHDRAW:
-                return $this->repository->updateBalance(
-                    $currentUser->username,
-                    $userBalance -= $ammount
-                );
+                $this->repository->updateBalance($currentUser, $balance -= $ammount);
+
+                return $balance;
 
             default:
-                throw new \Exception("error: invalid transaction action");
+                throw new \Exception("error: invalid action input");
         }
     }
 }

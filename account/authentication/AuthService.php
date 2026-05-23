@@ -24,21 +24,33 @@ class AuthService
         $this->repository = new AccountRepository();
     }
 
+    public function register(User $user)
+    {
+        $this->repository->doRegis(
+            $user->getName(),
+            $user->getUsername(),
+            $user->getPassword(),
+        );
+    }
+
     public function login(User $user)
     {
-        $account = $this->repository->getUsername($user->getUsername());
+        $currentUser = $this->repository->doLogin($user->getUsername());
 
-        if (!$account) {
-            throw new \Exception("error: unauthenticate user");
+        if (!$currentUser) {
+            throw new \Exception("error: account not found");
         }
 
-        if ($account->password !== $user->getPassword()) {
+        if ($user->getPassword() !== $currentUser->password) {
             throw new \Exception("error: invalid credentials");
         }
 
-        $this->session->login($account->username);
+        return $this->session->active($currentUser->id);
+    }
 
-        return $this->session->isAuthenticated();
+    public function logout()
+    {
+        $this->session->inactive();
     }
 
     public function authenticated()

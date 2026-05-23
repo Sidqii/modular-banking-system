@@ -19,20 +19,14 @@ class RegularAccount extends BankAccount implements TransactionFee
         return $ammount + 300;
     }
 
-    #[\Override]
-    public function additionByFee(int $ammount)
-    {
-        throw new \Exception("Not implemented");
-    }
-
     public function deposito(int $ammount)
     {
-        $currentUser = $this->repository->getUsername(
-            $this->service->currentUser()
-        );
+        $currentUser = $this->service->currentUser();
+
+        $userBalance = $this->repository->getUserBalance($currentUser)->balance;
 
         $this->validateAmmount(
-            $currentUser->balance,
+            $userBalance,
             $ammount,
             self::DEPOSITO
         );
@@ -43,31 +37,27 @@ class RegularAccount extends BankAccount implements TransactionFee
             self::DEPOSITO
         );
 
-        return $this->loggerActivity(
-            "deposito: {$ammount}"
-        );
+        return $this->loggerActivity("deposito: IDR {$ammount}");
     }
 
     public function withdraw(int $ammount)
     {
-        $currentUser = $this->repository->getUsername(
-            $this->service->currentUser()
-        );
+        $currentUser = $this->service->currentUser();
+
+        $userBalance = $this->repository->getUserBalance($currentUser)->balance;
 
         $this->validateAmmount(
-            $currentUser->balance,
-            $ammount,
+            $userBalance,
+            $this->deductionByFee($ammount),
             self::WITHDRAW
         );
 
         $this->transaction(
             $currentUser,
-            $this->deductionByFee($ammount),
+            $ammount,
             self::WITHDRAW
         );
 
-        return $this->loggerActivity(
-            "withdraw: {$ammount}"
-        );
+        return $this->loggerActivity("witdraw: IDR {$ammount}");
     }
 }

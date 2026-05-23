@@ -15,51 +15,92 @@ class AccountRepository
         $this->database = new Database();
     }
 
-    public function createAccount(string $name, string $username, string $password)
+    public function doRegis(string $name, string $email, string $password): void
     {
         $connection = $this->database->getConnection();
 
         $statement = $connection->prepare(
-            "INSERT INTO accounts (name, username, password) VALUES (:name, :username, :password)"
+            "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)"
         );
 
         $statement->execute([
             'name' => $name,
-            'username' => $username,
+            'email' => $email,
             'password' => $password,
         ]);
-
-        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getUsername(string $username)
+    public function doLogin(string $email)
     {
         $connection = $this->database->getConnection();
 
         $statement = $connection->prepare(
-            "SELECT * FROM accounts WHERE username = :username",
+            "SELECT * FROM users WHERE email = :email",
         );
 
         $statement->execute([
-            "username" => $username,
+            "email" => $email,
         ]);
 
         return $statement->fetch(PDO::FETCH_OBJ);
     }
 
-    public function updateBalance(string $username, int $balance)
+    public function userById(int $id)
     {
         $connection = $this->database->getConnection();
 
         $statement = $connection->prepare(
-            "UPDATE accounts SET balance = :balance WHERE username = :username",
+            "SELECT * FROM users WHERE id = :id",
         );
 
         $statement->execute([
-            "username" => $username,
+            "id" => $id,
+        ]);
+
+        return $statement->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function getUserBalance(int $id)
+    {
+        $connection = $this->database->getConnection();
+
+        $statement = $connection->prepare(
+            "SELECT balance FROM accounts WHERE user_id = :id",
+        );
+
+        $statement->execute([
+            "id" => $id,
+        ]);
+
+        return $statement->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function updateBalance(int $id, int $balance): void
+    {
+        $connection = $this->database->getConnection();
+
+        $statement = $connection->prepare(
+            "UPDATE accounts SET balance = :balance WHERE user_id = :id",
+        );
+
+        $statement->execute([
+            "id" => $id,
             "balance" => $balance,
         ]);
+    }
 
-        return $statement->fetch(PDO::FETCH_OBJ);
+    public function makeAccount(int $id, int $openBalance)
+    {
+        $connection = $this->database->getConnection();
+
+        $statement = $connection->prepare(
+            "INSERT INTO account (user_id, balance, level)
+            VALUES (:user_id, :open_balance, regular)"
+        );
+
+        $statement->execute([
+            "user_id" => $id,
+            "open_balance" => $openBalance,
+        ]);
     }
 }

@@ -28,18 +28,12 @@ trait HasValidation
 
     public function validateAmmount(int $balance, int $ammount, string $action)
     {
-        if (preg_match("/^[a-zA-Z]+$/", $ammount)) {
-            throw new \Exception("error: ammount can only contain number");
-        }
-
         if ($ammount <= 5000) {
             throw new \Exception("error: ammount transaction minimum 5000");
         }
 
-        if ($action === 'withdraw') {
-            if ($balance < $ammount) {
-                throw new \Exception("error: insufficient balance");
-            }
+        if ($action === 'withdraw' && $ammount >= $balance) {
+            throw new \Exception("failed: insufficient balance");
         }
 
         return $ammount;
