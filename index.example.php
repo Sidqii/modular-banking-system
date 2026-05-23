@@ -1,27 +1,37 @@
 <?php
 
-use Account\Authentication\AuthService;
-use Account\Bank\RegularAccount;
+use Data\Env;
 use Account\User;
+use Account\Bank\RegularAccount;
+use Account\Authentication\AuthService;
 
-require_once __DIR__ . "/account/authentication/AuthService.php";
-require_once __DIR__ . "/account/User.php";
+require_once __DIR__ . "/data/Env.php";
 require_once __DIR__ . "/account/bank/RegularAccount.php";
+require_once __DIR__ . "/account/authentication/AuthService.php";
 
 /**
- * here some example what i"ve learn😁
+ * HERE LIES 🥀
+ * AUTHOR'S
+ * COFFEE AND DEBUG
  */
 
+Env::load(__DIR__ . "/.env");
+
 try {
-    $user = new User("anggoro", "anggoro123");
+    $user = new User(
+        name: 'racoon',
+        username: 'racoon@mail.com',
+        password: 'racoon123',
+    );
 
-    $auth = new AuthService();
+    $service = new AuthService();
 
-    $auth->login($user);
+    $service->login($user);
 
-    $bank = new RegularAccount($auth);
+    $bank = new RegularAccount($service);
 
-    $bank->withdraw(5000);
+    $bank->withdraw(5200);
+    // $bank->deposito(5500);
 
     echo $bank->checkBalance();
 } catch (\Throwable $th) {
