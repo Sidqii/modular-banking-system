@@ -3,43 +3,42 @@
 namespace Account\Authentication;
 
 use Account\User;
-use Data\DummyDatabase;
+use Data\AccountRepository;
 use Traits\HasActivity;
 
-require_once __DIR__ . '/../User.php';
-require_once __DIR__ . '/AuthSession.php';
-require_once __DIR__ . '/../../data/DummyDatabase.php';
-require_once __DIR__ . '/../../traits/HasActivity.php';
+require_once __DIR__ . "/../User.php";
+require_once __DIR__ . "/AuthSession.php";
+require_once __DIR__ . "/../../data/AccountRepository.php";
+require_once __DIR__ . "/../../traits/HasActivity.php";
 
 class AuthService
 {
     use HasActivity;
 
     private AuthSession $session;
-    private DummyDatabase $database;
+    private AccountRepository $repository;
 
     public function __construct()
     {
         $this->session = new AuthSession();
-        $this->database = new DummyDatabase();
+        $this->repository = new AccountRepository();
     }
 
     public function login(User $user)
     {
-        $username = $user->getUsername();
-        $password = $user->getPassword();
+        $account = $this->repository->getUsername($user->getUsername());
 
-        foreach ($this->database->getData() as $data) {
-
-            if ($data['username'] === $username && $data['password'] === $password) {
-
-                $this->session->login($username);
-
-                return $this->loggerActivity('success: login successfully');
-            }
+        if (!$account) {
+            throw new \Exception("error: unauthenticate user");
         }
 
-        throw new \Exception($this->loggerError($username . " not found."));
+        if ($account->password !== $user->getPassword()) {
+            throw new \Exception("error: invalid credentials");
+        }
+
+        $this->session->login($account->username);
+
+        return $this->session->isAuthenticated();
     }
 
     public function authenticated()

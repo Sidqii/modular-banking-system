@@ -6,11 +6,7 @@ trait HasValidation
 {
     public function validateUsername(string $text)
     {
-        // if (!preg_match('/^[a-zA-Z]+$/', $text)) {
-        //     throw new \Exception('error: name can only contain alphabetical characters');
-        // }
-
-        if (!str_contains(explode('@', $text)[1], '.')) {
+        if (!str_contains(explode("@", $text)[1], ".")) {
             throw new \Exception("error: invalid username input");
         }
 
@@ -28,5 +24,24 @@ trait HasValidation
         }
 
         return $text;
+    }
+
+    public function validateAmmount(int $balance, int $ammount, string $action)
+    {
+        if (preg_match("/^[a-zA-Z]+$/", $ammount)) {
+            throw new \Exception("error: ammount can only contain number");
+        }
+
+        if ($ammount <= 5000) {
+            throw new \Exception("error: ammount transaction minimum 5000");
+        }
+
+        if ($action === 'withdraw') {
+            if ($balance < $ammount) {
+                throw new \Exception("error: insufficient balance");
+            }
+        }
+
+        return $ammount;
     }
 }

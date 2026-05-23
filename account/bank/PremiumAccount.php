@@ -3,12 +3,16 @@
 namespace Account\Bank;
 
 use Contract\TransactionFee;
+use Traits\HasActivity;
+use Traits\HasValidation;
 
-require_once __DIR__ . '/BankAccount.php';
-require_once __DIR__ . '/../../contract/TransactionFee.php';
+require_once __DIR__ . "/BankAccount.php";
+require_once __DIR__ . "/../../contract/TransactionFee.php";
 
 class PremiumAccount extends BankAccount implements TransactionFee
 {
+    use HasActivity, HasValidation;
+
     #[\Override]
     public function deductionByFee(int $ammount)
     {
@@ -18,19 +22,52 @@ class PremiumAccount extends BankAccount implements TransactionFee
     #[\Override]
     public function additionByFee(int $ammount)
     {
-        throw new \Exception('Not implemented');
+        throw new \Exception("Not implemented");
     }
 
     public function deposito(int $ammount)
     {
-        $this->transaction($ammount, self::DEPOSITO);
+        $currentUser = $this->repository->getUsername(
+            $this->service->currentUser()
+        );
+
+        $this->validateAmmount(
+            $currentUser->balance,
+            $ammount,
+            self::DEPOSITO
+        );
+
+        $this->transaction(
+            $currentUser,
+            $ammount,
+            self::DEPOSITO
+        );
+
+        return $this->loggerActivity(
+            "deposito: {$ammount}"
+        );
     }
 
     public function withdraw(int $ammount)
     {
+        $currentUser = $this->repository->getUsername(
+            $this->service->currentUser()
+        );
+
+        $this->validateAmmount(
+            $currentUser->balance,
+            $ammount,
+            self::WITHDRAW
+        );
+
         $this->transaction(
+            $currentUser,
             $this->deductionByFee($ammount),
-            self::WITHDRAW,
+            self::WITHDRAW
+        );
+
+        return $this->loggerActivity(
+            "withdraw: {$ammount}"
         );
     }
 }

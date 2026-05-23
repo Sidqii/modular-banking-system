@@ -8,9 +8,4 @@ trait HasActivity
     {
         return "[LOG]:{$message}\n";
     }
-
-    public function loggerError(string $message)
-    {
-        return "[ERROR]: {$message}\n";
-    }
 }

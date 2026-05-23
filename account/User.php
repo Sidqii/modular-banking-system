@@ -4,7 +4,7 @@ namespace Account;
 
 use Traits\HasValidation;
 
-require_once __DIR__ . '/../traits/HasValidation.php';
+require_once __DIR__ . "/../traits/HasValidation.php";
 
 class User
 {

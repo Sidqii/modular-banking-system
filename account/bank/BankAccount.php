@@ -3,75 +3,62 @@
 namespace Account\Bank;
 
 use Account\Authentication\AuthService;
-use Data\DummyDatabase;
+use Data\AccountRepository;
 use Traits\HasActivity;
 
-require_once __DIR__ . '/../User.php';
-require_once __DIR__ . '/../../traits/HasActivity.php';
-require_once __DIR__ . '/../../data/DummyDatabase.php';
-require_once __DIR__ . '/../authentication/AuthService.php';
-require_once __DIR__ . '/../authentication/AuthSession.php';
+require_once __DIR__ . "/../User.php";
+require_once __DIR__ . "/../../traits/HasActivity.php";
+require_once __DIR__ . "/../authentication/AuthService.php";
+require_once __DIR__ . "/../authentication/AuthSession.php";
 
 abstract class BankAccount
 {
     use HasActivity;
 
-    protected DummyDatabase $balance;
     protected AuthService $service;
+    protected AccountRepository $repository;
 
-    protected const DEPOSITO = 'deposito';
-    protected const WITHDRAW = 'withdraw';
+    protected const DEPOSITO = "deposito";
+    protected const WITHDRAW = "withdraw";
 
     public function __construct(AuthService $service)
     {
-        $this->balance = new DummyDatabase();
         $this->service = $service;
+        $this->repository = new AccountRepository();
+    }
+
+    public function createAccount()
+    {
+        throw new \Exception("Unimplemented method");
     }
 
     public function checkBalance()
     {
-        if (!$this->service->authenticated()) {
-            throw new \Exception($this->loggerError("username are unauthenticated"));
-        }
+        $currentUser = $this->repository->getUsername($this->service->currentUser());
 
-        foreach ($this->balance->getData() as $balance) {
-
-            if ($balance['username'] === $this->service->currentUser()) {
-
-                return $this->loggerActivity('balance: total balance ' . $balance['balance']);
-            }
-        }
-
-        throw new \Exception(
-            $this->loggerError("username " . $this->service->currentUser() . " not found")
-        );
+        return $this->loggerActivity("balance: " . $currentUser->balance);
     }
 
-    protected function transaction(int $ammount, string $action)
+    protected function transaction(object $currentUser, int $ammount, string $action)
     {
-        foreach ($this->balance->getData() as $balance) {
+        $userBalance = $currentUser->balance;
 
-            if ($balance['username'] === $this->service->currentUser()) {
+        switch ($action) {
 
-                switch ($action) {
-                    case self::DEPOSITO:
+            case self::DEPOSITO:
+                return $this->repository->updateBalance(
+                    $currentUser->username,
+                    $userBalance += $ammount
+                );
 
-                        return $this->balance->updateBalance(
-                            $this->service->currentUser(),
-                            $balance['balance'] += $ammount
-                        );
+            case self::WITHDRAW:
+                return $this->repository->updateBalance(
+                    $currentUser->username,
+                    $userBalance -= $ammount
+                );
 
-                    case self::WITHDRAW:
-
-                        return $this->balance->updateBalance(
-                            $this->service->currentUser(),
-                            $balance['balance'] -= $ammount
-                        );
-
-                    default:
-                        return $this->loggerActivity('failed: invalid action input');
-                }
-            }
+            default:
+                throw new \Exception("error: invalid transaction action");
         }
     }
 }
