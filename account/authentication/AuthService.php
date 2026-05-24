@@ -4,11 +4,15 @@ namespace Account\Authentication;
 
 use Account\User;
 use Data\AccountRepository;
+use Data\BankRepository;
 use Traits\HasActivity;
 
 require_once __DIR__ . "/../User.php";
 require_once __DIR__ . "/AuthSession.php";
+
+require_once __DIR__ . "/../../data/BankRepository.php";
 require_once __DIR__ . "/../../data/AccountRepository.php";
+
 require_once __DIR__ . "/../../traits/HasActivity.php";
 
 class AuthService
@@ -16,26 +20,30 @@ class AuthService
     use HasActivity;
 
     private AuthSession $session;
-    private AccountRepository $repository;
+    private BankRepository $bankRepository;
+    private AccountRepository $accountRepository;
 
     public function __construct()
     {
         $this->session = new AuthSession();
-        $this->repository = new AccountRepository();
+        $this->bankRepository = new BankRepository();
+        $this->accountRepository = new AccountRepository();
     }
 
-    public function register(User $user)
+    public function createAccount(User $user, int $ammount)
     {
-        $this->repository->doRegis(
+        $id = $this->accountRepository->doRegis(
             $user->getName(),
             $user->getUsername(),
             $user->getPassword(),
         );
+
+        $this->bankRepository->openBalance($id, $ammount);
     }
 
     public function login(User $user)
     {
-        $currentUser = $this->repository->doLogin($user->getUsername());
+        $currentUser = $this->accountRepository->doLogin($user->getUsername());
 
         if (!$currentUser) {
             throw new \Exception("error: account not found");

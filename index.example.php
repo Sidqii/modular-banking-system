@@ -2,11 +2,11 @@
 
 use Data\Env;
 use Account\User;
-use Account\Bank\RegularAccount;
+use Account\Bank\PremiumAccount;
 use Account\Authentication\AuthService;
 
 require_once __DIR__ . "/data/Env.php";
-require_once __DIR__ . "/account/bank/RegularAccount.php";
+require_once __DIR__ . "/account/bank/PremiumAccount.php";
 require_once __DIR__ . "/account/authentication/AuthService.php";
 
 /**
@@ -20,20 +20,18 @@ Env::load(__DIR__ . "/.env");
 try {
     $user = new User(
         name: 'racoon',
-        username: 'racoon@mail.com',
+        username: 'racoon@test.com',
         password: 'racoon123',
     );
 
-    $service = new AuthService();
+    $services = new AuthService();
 
-    $service->login($user);
+    // change into login method to access check balance👍
+    $services->createAccount($user, 185000);
 
-    $bank = new RegularAccount($service);
+    $bankAccount = new PremiumAccount($services);
 
-    $bank->withdraw(5200);
-    // $bank->deposito(5500);
-
-    echo $bank->checkBalance();
+    echo $bankAccount->checkBalance();
 } catch (\Throwable $th) {
     echo $th->getMessage();
 }

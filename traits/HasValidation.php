@@ -26,16 +26,16 @@ trait HasValidation
         return $text;
     }
 
-    public function validateAmmount(int $balance, int $ammount, string $action)
+    public function validateAmmount(int $balance, int $amount, string $action)
     {
-        if ($ammount <= 5000) {
-            throw new \Exception("error: ammount transaction minimum 5000");
+        if ($action === 'withdraw' && $amount <= 25000) {
+            throw new \Exception("error: amount transaction minimum 25000");
         }
 
-        if ($action === 'withdraw' && $ammount >= $balance) {
+        if ($action === 'withdraw' && $amount >= $balance) {
             throw new \Exception("failed: insufficient balance");
         }
 
-        return $ammount;
+        return $amount;
     }
 }
